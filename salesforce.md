@@ -22,3 +22,10 @@ https://success.salesforce.com/answers?id=90630000000h2XWAAY
 
 Custom Salesforce Button to Execute JavaScript:
 http://www.interactiveties.com/blog/2010/execute-javascript-button.php
+
+
+3 Salesforce Hacks Your Inside Reps Will Be Thankful For:
+https://blog.bridgegroupinc.com/3-salesforce-hacks-your-inside-reps-will-be-thankful-for
+Display the timezone of a phone number
+Create a better 'Find Dupes' button
+Reinforce process by stage/status
