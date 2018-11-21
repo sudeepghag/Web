@@ -68,12 +68,89 @@ Note
 - NOTE This example is for contacts. Change the object type for a different type of record.
 - Add the button to the appropriate related list on a page layout or list view layout.
 
-####
+#### Create a Custom Button for Performing Mass Deletes
+```javascript
+{!REQUIRESCRIPT("/soap/ajax/9.0/connection.js")} 
+
+var records = {!GETRECORDIDS( $ObjectType.Event )}; 
+var taskRecords = {!GETRECORDIDS( $ObjectType.Task)}; 
+records = records.concat(taskRecords); 
 
 
-####
+if (records[0] == null) { 
+alert("Please select at least one record.") } 
+else { 
+
+var errors = []; 
+var result = sforce.connection.deleteIds(records); 
+if (result && result.length){ 
+var numFailed = 0; 
+var numSucceeded = 0; 
+for (var i = 0; i < result.length; i++){ 
+var res = result[i]; 
+if (res && res.success == 'true'){ 
+numSucceeded++; 
+} else { 
+var es = res.getArray("errors"); 
+if (es.length > 0) { 
+errors.push(es[0].message); 
+} 
+numFailed++; 
+} 
+} 
+if (numFailed > 0){ 
+alert("Failed: " + numFailed + "\nSucceeded: " + numSucceeded + " \n Due to: " + errors.join("\n")); 
+} else { 
+alert("Number of records deleted: " + numSucceeded); 
+} 
+} 
+window.location.reload(); 
+}
+```
+
+#### Passing Record IDs to an External System
+```javascript
+<script type="text/javascript">
+idArray = {!GETRECORDIDS($ObjectType.Account)};
+window.location.href="http://www.yourwebsitehere.com?array="+idArray;
+</script>
+```
 
 
+#### Reopening Cases
+- Display Type─List Button
+- NOTE Select Display Checkboxes (for Multi-Record Selection) so users can select multiple records in the list before clicking the button.
+- Behavior─Execute JavaScript
+- Content Source─OnClick JavaScript
+- Use the following sample code.
+```javascript
+{!REQUIRESCRIPT ("/soap/ajax/13.0/connection.js")} 
+var records = {!GETRECORDIDS($ObjectType.Sample)}; 
+var newRecords = []; 
 
-#### 
-
+if (records[0] == null) { 
+     alert("Please select at least one row") 
+} 
+else {
+      for (var n=0; n<records.length; n++) { 
+         var c = new sforce.SObject("Case"); 
+         c.id = records[n]; 
+         c.Status = "New";
+         newRecords.push(c); 
+      } 
+        result = sforce.connection.update(newRecords); 
+        window.location.reload(); 
+ }
+```
+#### International Maps
+```javascript
+{! 
+IF(Sample.BillingCountry = "US", 
+"http://maps.google.com/maps?q=​"&Sample.BillingStreet&​
+"+"&Sample.BillingCity&"+​"&Sample.BillingState&"+​"&Sample.BillingCountry, 
+(IF(Sample.BillingCountry = "UK", 
+"http://maps.google.co.uk/maps?q=​"&Sample.BillingStreet
+&​"+"&Sample.BillingCity&​"+​"&Sample.BillingCountry, 
+"http://maps.google.com"))) 
+}
+```
