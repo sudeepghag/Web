@@ -154,3 +154,43 @@ IF(Sample.BillingCountry = "US",
 "http://maps.google.com"))) 
 }
 ```
+#### Call Apex from Custom button
+
+- Goto --> Setup --> Object --> Buttons, links and Actions section
+- Click New Button or Link
+- Enter the Name of the button
+- Behaviour : Execute Javascript
+- Content source : On-Click Javascript
+```javascript
+   {!REQUIRESCRIPT("/soap/ajax/30.0/connection.js")}
+   {!REQUIRESCRIPT("/soap/ajax/30.0/apex.js")}
+
+   if({!AAA__c.Name}!=Null)
+   {
+       sforce.apex.execute("MyClass","myMethod",{});
+       alert("This is {!AAA__c.Name}");
+   }
+   
+   sforce.apex.execute("myClass","makeContact", {lastName:"Smith", a:account});
+```
+
+#### Update Status from Custom Button
+```javascript
+{!REQUIRESCRIPT("/soap/ajax/19.0/connection.js")} //adds the proper code for inclusion of AJAX toolkit
+var url = parent.location.href; //string for the URL of the current page
+var records = {!GETRECORDIDS($ObjectType.Lead)}; //grabs the Lead records that the user is requesting to update
+var updateRecords = []; //array for holding records that this code will ultimately update
+
+if (records[0] == null) { //if the button was clicked but there was no record selected
+	alert("Please select at least one record to update."); //alert the user that they didn't make a selection 
+} else { //otherwise, there was a record selection
+	for (var a=0; a<records.length; a++) { //for all records
+		var update_Lead = new sforce.SObject("Lead"); //create a new sObject for storing updated record details
+		update_Lead.Id = records[a]; //set the Id of the selected Lead record
+		update_Lead.Status = "Unqualified"; //set the value for Status to 'Unqualified'
+		updateRecords.push(update_Lead); //add the updated record to our array
+	}
+	result = sforce.connection.update(updateRecords); //push the updated records back to Salesforce
+	parent.location.href = url; //refresh the page
+}
+```
