@@ -1,6 +1,24 @@
 #### Salesforce Merge Accounts URL Hacking:
 https://fosnez.blogspot.com/2012/11/salesforce-merge-accounts-url-hacking.html
 
+```javascript
+{!REQUIRESCRIPT("/soap/ajax/19.0/connection.js")} 
+var sHost = parent.location.host; 
+var url = parent.location.href; 
+var records = {!GETRECORDIDS($ObjectType.Account)}; 
+var updateRecords = []; 
+var sQueryParameter ='/merge/accmergewizard.jsp?goNext=+Next+';
+
+if (records[0] == null) { 
+	alert("Please select at least one record to merge.");  
+} else { 
+	for (var a=0; a<records.length; a++) { 
+		sQueryParameter = sQueryParameter + '&cid=' + records[a]; 
+	}
+	window.location.href = sQueryParameter; 
+}
+```
+
 
 #### Salesforce Email URL Hack:
 https://www.salesforceben.com/salesforce-email-url-hack-tutorial/
